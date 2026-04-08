@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title><%= content_for(:title) || "Propeller - Email Marketing on Autopilot" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="Propeller is an agentic email marketing platform. AI writes, tests, and optimizes your campaigns autonomously.">
+    <meta name="keywords" content="email marketing, AI, agentic, automation, A/B testing, campaigns">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Propeller">
+    <meta name="mobile-web-app-capable" content="yes">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="Propeller - Email Marketing on Autopilot">
+    <meta property="og:description" content="AI that writes, tests, and optimizes your email campaigns autonomously.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://propeller.rocks">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Propeller - Email Marketing on Autopilot">
+    <meta name="twitter:description" content="AI that writes, tests, and optimizes your email campaigns autonomously.">
+
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="antialiased">
+    <%= yield %>
+  </body>
+</html>
