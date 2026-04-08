@@ -10,7 +10,7 @@ class CreateEmailSequences < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :email_sequences, [:account_id, :status]
+    add_index :email_sequences, [ :account_id, :status ]
     add_index :email_sequences, :trigger_type
   end
 end

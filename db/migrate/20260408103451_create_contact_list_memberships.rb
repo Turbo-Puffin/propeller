@@ -7,6 +7,6 @@ class CreateContactListMemberships < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :contact_list_memberships, [:contact_id, :contact_list_id], unique: true, name: 'idx_contact_list_memberships_unique'
+    add_index :contact_list_memberships, [ :contact_id, :contact_list_id ], unique: true, name: 'idx_contact_list_memberships_unique'
   end
 end

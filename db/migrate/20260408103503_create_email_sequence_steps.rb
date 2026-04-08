@@ -12,6 +12,6 @@ class CreateEmailSequenceSteps < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :email_sequence_steps, [:email_sequence_id, :position], unique: true, name: 'idx_email_sequence_steps_on_sequence_and_position'
+    add_index :email_sequence_steps, [ :email_sequence_id, :position ], unique: true, name: 'idx_email_sequence_steps_on_sequence_and_position'
   end
 end

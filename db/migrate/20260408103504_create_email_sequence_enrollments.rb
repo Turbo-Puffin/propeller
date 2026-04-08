@@ -11,7 +11,7 @@ class CreateEmailSequenceEnrollments < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :email_sequence_enrollments, [:email_sequence_id, :contact_id], unique: true, name: 'idx_email_seq_enrollments_unique'
+    add_index :email_sequence_enrollments, [ :email_sequence_id, :contact_id ], unique: true, name: 'idx_email_seq_enrollments_unique'
     add_index :email_sequence_enrollments, :status
   end
 end

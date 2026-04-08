@@ -7,5 +7,5 @@ class Campaign < ApplicationRecord
 
   validates :name, presence: true
 
-  scope :active, -> { where(status: [:scheduled, :sending]) }
+  scope :active, -> { where(status: [ :scheduled, :sending ]) }
 end

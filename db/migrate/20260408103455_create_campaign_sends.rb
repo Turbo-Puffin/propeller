@@ -12,7 +12,7 @@ class CreateCampaignSends < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :campaign_sends, [:campaign_id, :contact_id], unique: true
+    add_index :campaign_sends, [ :campaign_id, :contact_id ], unique: true
     add_index :campaign_sends, :status
   end
 end

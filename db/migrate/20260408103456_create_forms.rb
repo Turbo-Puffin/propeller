@@ -13,7 +13,7 @@ class CreateForms < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :forms, [:account_id, :status]
+    add_index :forms, [ :account_id, :status ]
     add_index :forms, :form_type
   end
 end

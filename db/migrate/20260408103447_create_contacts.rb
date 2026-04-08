@@ -13,7 +13,7 @@ class CreateContacts < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :contacts, [:account_id, :email], unique: true
+    add_index :contacts, [ :account_id, :email ], unique: true
     add_index :contacts, :status
     add_index :contacts, :email
   end

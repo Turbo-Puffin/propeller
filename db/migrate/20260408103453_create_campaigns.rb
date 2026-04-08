@@ -19,6 +19,6 @@ class CreateCampaigns < ActiveRecord::Migration[8.1]
 
     add_index :campaigns, :status
     add_index :campaigns, :campaign_type
-    add_index :campaigns, [:account_id, :status]
+    add_index :campaigns, [ :account_id, :status ]
   end
 end

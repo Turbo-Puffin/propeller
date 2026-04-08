@@ -6,5 +6,5 @@ class CampaignSend < ApplicationRecord
 
   validates :contact_id, uniqueness: { scope: :campaign_id }
 
-  scope :delivered, -> { where(status: [:delivered, :opened, :clicked]) }
+  scope :delivered, -> { where(status: [ :delivered, :opened, :clicked ]) }
 end

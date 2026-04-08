@@ -9,6 +9,6 @@ class CreateContactLists < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :contact_lists, [:account_id, :name]
+    add_index :contact_lists, [ :account_id, :name ]
   end
 end
