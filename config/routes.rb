@@ -9,6 +9,16 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
+  # Authentication
+  get  "/login",  to: "sessions#new",      as: :login
+  post "/login",  to: "sessions#create"
+  delete "/logout", to: "sessions#destroy", as: :logout
+
+  get  "/signup", to: "registrations#new",    as: :signup
+  post "/signup", to: "registrations#create"
+
+  get "/dashboard", to: "dashboard#show", as: :dashboard
+
   root "pages#home"
   post "/waitlist", to: "waitlist#create", as: :waitlist
 end

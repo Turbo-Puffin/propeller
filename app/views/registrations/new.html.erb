@@ -1,0 +1,116 @@
+<% content_for(:title, "Sign Up — Propeller") %>
+
+<div class="min-h-screen bg-gray-950 flex items-center justify-center px-6 py-12 relative overflow-hidden">
+  <!-- Background orbs -->
+  <div class="absolute top-1/4 left-1/3 w-80 h-80 bg-indigo-600/15 rounded-full blur-3xl"></div>
+  <div class="absolute bottom-1/4 right-1/3 w-80 h-80 bg-violet-600/15 rounded-full blur-3xl"></div>
+
+  <div class="relative z-10 w-full max-w-md">
+    <!-- Logo -->
+    <div class="text-center mb-8">
+      <a href="/" class="text-2xl font-bold text-white tracking-tight">
+        🚀 <span class="bg-gradient-to-r from-indigo-400 to-violet-400 bg-clip-text text-transparent">Propeller</span>
+      </a>
+      <h1 class="mt-4 text-3xl font-bold text-white">Create your account</h1>
+      <p class="mt-2 text-gray-400">Start your free trial — no credit card required</p>
+    </div>
+
+    <!-- Flash messages -->
+    <% if flash[:alert] %>
+      <div class="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-sm font-medium">
+        <%= flash[:alert] %>
+      </div>
+    <% end %>
+
+    <% if @errors.present? %>
+      <div class="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-sm font-medium">
+        <ul class="list-disc list-inside space-y-1">
+          <% @errors.each do |error| %>
+            <li><%= error %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <!-- Form -->
+    <div class="bg-gray-900/60 border border-gray-800 rounded-2xl p-8 shadow-2xl">
+      <%= form_with url: signup_path, method: :post, local: true, class: "space-y-5" do |f| %>
+        <div>
+          <label for="account_name" class="block text-sm font-medium text-gray-300 mb-2">Company / Account Name</label>
+          <input
+            type="text"
+            name="account_name"
+            id="account_name"
+            required
+            autofocus
+            placeholder="Acme Inc."
+            value="<%= params[:account_name] %>"
+            class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all duration-200"
+          >
+        </div>
+
+        <div>
+          <label for="name" class="block text-sm font-medium text-gray-300 mb-2">Your Name</label>
+          <input
+            type="text"
+            name="name"
+            id="name"
+            required
+            placeholder="Jane Smith"
+            value="<%= params[:name] %>"
+            class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all duration-200"
+          >
+        </div>
+
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-300 mb-2">Email</label>
+          <input
+            type="email"
+            name="email"
+            id="email"
+            required
+            placeholder="you@company.com"
+            value="<%= params[:email] %>"
+            class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all duration-200"
+          >
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-300 mb-2">Password</label>
+          <input
+            type="password"
+            name="password"
+            id="password"
+            required
+            placeholder="••••••••"
+            class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all duration-200"
+          >
+        </div>
+
+        <div>
+          <label for="password_confirmation" class="block text-sm font-medium text-gray-300 mb-2">Confirm Password</label>
+          <input
+            type="password"
+            name="password_confirmation"
+            id="password_confirmation"
+            required
+            placeholder="••••••••"
+            class="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 transition-all duration-200"
+          >
+        </div>
+
+        <button
+          type="submit"
+          class="w-full px-6 py-3.5 text-base font-semibold text-white bg-gradient-to-r from-indigo-600 to-violet-600 rounded-xl hover:from-indigo-500 hover:to-violet-500 transition-all duration-300 shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40 cursor-pointer"
+        >
+          Create Account
+        </button>
+      <% end %>
+    </div>
+
+    <p class="mt-6 text-center text-gray-400 text-sm">
+      Already have an account?
+      <a href="/login" class="text-indigo-400 hover:text-indigo-300 font-medium transition-colors">Log in</a>
+    </p>
+  </div>
+</div>
