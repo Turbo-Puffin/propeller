@@ -1,0 +1,12 @@
+<nav class="fixed top-0 left-0 right-0 z-50 bg-gray-950/80 backdrop-blur-lg border-b border-white/5">
+  <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="/" class="text-2xl font-bold text-white tracking-tight" aria-label="Propeller home">
+      <img src="/logo.svg" alt="Propeller" style="height: 30px; display: inline-block;">
+    </a>
+    <div class="flex items-center gap-4">
+      <%= link_to "Dashboard", dashboard_path, class: "text-sm text-gray-300 hover:text-white" %>
+      <span class="text-sm text-gray-400"><%= current_user.email %></span>
+      <%= button_to "Log out", logout_path, method: :delete, class: "px-4 py-2 text-sm font-medium text-gray-300 hover:text-white border border-gray-700 hover:border-gray-600 rounded-full transition-all duration-200" %>
+    </div>
+  </div>
+</nav>

@@ -19,6 +19,36 @@ Rails.application.routes.draw do
 
   get "/dashboard", to: "dashboard#show", as: :dashboard
 
+  namespace :settings do
+    resources :webhook_endpoints do
+      member do
+        post :test_fire
+      end
+      resources :deliveries, only: [ :index ], controller: "webhook_deliveries"
+    end
+    resources :webhook_deliveries, only: [] do
+      member do
+        post :replay
+      end
+    end
+  end
+
+  namespace :api do
+    namespace :v1 do
+      resources :webhook_endpoints do
+        member do
+          get :deliveries
+          post :test_fire
+        end
+      end
+      resources :webhook_deliveries, only: [] do
+        member do
+          post :replay
+        end
+      end
+    end
+  end
+
   root "pages#home"
   post "/waitlist", to: "waitlist#create", as: :waitlist
 end
