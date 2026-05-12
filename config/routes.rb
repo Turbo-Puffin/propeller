@@ -21,6 +21,7 @@ Rails.application.routes.draw do
 
   namespace :settings do
     resources :api_keys, only: [ :index, :create, :destroy ]
+    resources :segments, only: [ :index, :new, :create, :edit, :update, :destroy ]
   end
 
   namespace :api do
@@ -35,6 +36,9 @@ Rails.application.routes.draw do
         post "cancel", on: :member
       end
       resources :sends, only: [ :index, :show ]
+      resources :segments, only: [ :index, :show, :create, :update, :destroy ] do
+        get "contacts", on: :member
+      end
     end
   end
 
