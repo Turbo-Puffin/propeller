@@ -1,0 +1,89 @@
+<% content_for(:title, "API keys — Propeller") %>
+
+<nav class="fixed top-0 left-0 right-0 z-50 bg-gray-950/80 backdrop-blur-lg border-b border-white/5">
+  <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="/" class="text-2xl font-bold text-white tracking-tight">
+      <img src="/logo.svg" alt="Propeller" style="height: 30px; display: inline-block;">
+    </a>
+    <div class="flex items-center gap-4">
+      <a href="/dashboard" class="text-sm text-gray-400 hover:text-white">Dashboard</a>
+      <span class="text-sm text-gray-400"><%= current_user.email %></span>
+      <%= button_to "Log out", logout_path, method: :delete, class: "px-4 py-2 text-sm font-medium text-gray-300 hover:text-white border border-gray-700 hover:border-gray-600 rounded-full transition-all duration-200" %>
+    </div>
+  </div>
+</nav>
+
+<main class="min-h-screen bg-gray-950 pt-24 px-6">
+  <div class="max-w-4xl mx-auto py-12">
+    <header class="mb-8">
+      <h1 class="text-3xl font-bold text-white mb-2">API keys</h1>
+      <p class="text-gray-400">Use these to authenticate REST requests to <code class="text-indigo-300">/api/v1</code>. Treat them like passwords.</p>
+    </header>
+
+    <% if flash[:notice] %>
+      <div role="status" aria-live="polite" class="mb-6 rounded-2xl border border-emerald-700 bg-emerald-900/30 text-emerald-100 px-4 py-3">
+        <%= flash[:notice] %>
+      </div>
+    <% end %>
+    <% if flash[:alert] %>
+      <div role="alert" aria-live="assertive" class="mb-6 rounded-2xl border border-red-700 bg-red-900/30 text-red-100 px-4 py-3">
+        <%= flash[:alert] %>
+      </div>
+    <% end %>
+
+    <% if @new_key.present? %>
+      <section aria-labelledby="new-key-heading" class="mb-8 rounded-2xl border border-indigo-700 bg-indigo-900/30 p-6">
+        <h2 id="new-key-heading" class="text-lg font-semibold text-white mb-2">New key: <%= @new_key["name"] || @new_key[:name] %></h2>
+        <p class="text-sm text-indigo-200 mb-3">Copy this key now. We store only a hash and cannot show it again.</p>
+        <pre class="bg-gray-950 border border-gray-800 rounded-lg p-3 text-emerald-300 text-sm overflow-x-auto select-all"><%= @new_key["plaintext"] || @new_key[:plaintext] %></pre>
+      </section>
+    <% end %>
+
+    <section aria-labelledby="create-key-heading" class="mb-10 rounded-2xl border border-gray-800 bg-gray-900/60 p-6">
+      <h2 id="create-key-heading" class="text-lg font-semibold text-white mb-4">Create a new key</h2>
+      <%= form_with url: settings_api_keys_path, method: :post, local: true, class: "flex flex-col sm:flex-row gap-3" do %>
+        <label class="flex-1">
+          <span class="sr-only">Key name</span>
+          <input type="text" name="name" required placeholder="e.g. Buddy production" class="w-full rounded-lg bg-gray-950 border border-gray-700 px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500" aria-label="Key name">
+        </label>
+        <label>
+          <span class="sr-only">Environment</span>
+          <select name="environment" class="rounded-lg bg-gray-950 border border-gray-700 px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" aria-label="Environment">
+            <option value="live">live</option>
+            <option value="test">test</option>
+          </select>
+        </label>
+        <button type="submit" class="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400">
+          Create key
+        </button>
+      <% end %>
+    </section>
+
+    <section aria-labelledby="existing-keys-heading">
+      <h2 id="existing-keys-heading" class="text-lg font-semibold text-white mb-4">Active keys</h2>
+      <% if @api_keys.empty? %>
+        <p class="text-gray-500">No active keys yet.</p>
+      <% else %>
+        <ul class="space-y-3" role="list">
+          <% @api_keys.each do |key| %>
+            <li class="rounded-2xl border border-gray-800 bg-gray-900/40 px-5 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div>
+                <p class="text-white font-medium"><%= key.name %></p>
+                <p class="text-sm text-gray-400 font-mono"><%= key.key_prefix %><span aria-hidden="true">...</span></p>
+                <p class="text-xs text-gray-500 mt-1">
+                  Created <%= key.created_at.to_date.iso8601 %>
+                  <% if key.last_used_at %>
+                    , last used <%= time_ago_in_words(key.last_used_at) %> ago
+                  <% else %>
+                    , never used
+                  <% end %>
+                </p>
+              </div>
+              <%= button_to "Revoke", settings_api_key_path(key), method: :delete, data: { turbo_confirm: "Revoke #{key.name}? This cannot be undone." }, class: "px-4 py-2 text-sm font-medium text-red-300 hover:text-red-100 border border-red-800 hover:border-red-600 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500" %>
+            </li>
+          <% end %>
+        </ul>
+      <% end %>
+    </section>
+  </div>
+</main>

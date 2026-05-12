@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_17_132934) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_12_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -26,6 +26,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_17_132934) do
     t.index ["plan"], name: "index_accounts_on_plan"
     t.index ["status"], name: "index_accounts_on_status"
     t.index ["subdomain"], name: "index_accounts_on_subdomain", unique: true
+  end
+
+  create_table "api_keys", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "account_id", null: false
+    t.datetime "created_at", null: false
+    t.string "key_digest", null: false
+    t.string "key_prefix", null: false
+    t.datetime "last_used_at"
+    t.string "name", null: false
+    t.datetime "revoked_at"
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_api_keys_on_account_id"
+    t.index ["key_digest"], name: "index_api_keys_on_key_digest", unique: true
+    t.index ["key_prefix"], name: "index_api_keys_on_key_prefix"
   end
 
   create_table "campaign_sends", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -196,6 +210,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_17_132934) do
     t.index ["email"], name: "index_waitlist_entries_on_email", unique: true
   end
 
+  add_foreign_key "api_keys", "accounts"
   add_foreign_key "campaign_sends", "campaigns"
   add_foreign_key "campaign_sends", "contacts"
   add_foreign_key "campaigns", "accounts"
