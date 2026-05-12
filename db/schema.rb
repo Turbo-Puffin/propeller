@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_12_000001) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_12_000002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -91,7 +91,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_12_000001) do
 
   create_table "contact_lists", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "account_id", null: false
-    t.jsonb "auto_segment_rules", default: {}
     t.datetime "created_at", null: false
     t.text "description"
     t.string "name", null: false
@@ -188,6 +187,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_12_000001) do
     t.index ["form_type"], name: "index_forms_on_form_type"
   end
 
+  create_table "segments", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "account_id", null: false
+    t.uuid "contact_list_id"
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.jsonb "rules", default: {"match"=>"all", "rules"=>[]}, null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "name"], name: "index_segments_on_account_id_and_name"
+    t.index ["account_id"], name: "index_segments_on_account_id"
+    t.index ["contact_list_id"], name: "index_segments_on_contact_list_id"
+  end
+
   create_table "users", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "account_id", null: false
     t.datetime "confirmed_at"
@@ -225,5 +236,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_12_000001) do
   add_foreign_key "form_submissions", "contacts"
   add_foreign_key "form_submissions", "forms"
   add_foreign_key "forms", "accounts"
+  add_foreign_key "segments", "accounts"
+  add_foreign_key "segments", "contact_lists"
   add_foreign_key "users", "accounts"
 end

@@ -49,7 +49,7 @@ module Api
       end
 
       def list_params
-        params.fetch(:list, params).permit(:name, :description, auto_segment_rules: {})
+        params.fetch(:list, params).permit(:name, :description)
       end
     end
   end
