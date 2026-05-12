@@ -19,6 +19,25 @@ Rails.application.routes.draw do
 
   get "/dashboard", to: "dashboard#show", as: :dashboard
 
+  namespace :settings do
+    resources :api_keys, only: [ :index, :create, :destroy ]
+  end
+
+  namespace :api do
+    namespace :v1 do
+      resources :contacts, only: [ :index, :show, :create, :update, :destroy ]
+      resources :lists, only: [ :index, :show, :create ] do
+        post "contacts", on: :member, action: :add_contact
+        delete "contacts/:contact_id", on: :member, action: :remove_contact
+      end
+      resources :campaigns, only: [ :index, :show, :create ] do
+        post "schedule", on: :member
+        post "cancel", on: :member
+      end
+      resources :sends, only: [ :index, :show ]
+    end
+  end
+
   root "pages#home"
   post "/waitlist", to: "waitlist#create", as: :waitlist
 end

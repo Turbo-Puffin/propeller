@@ -1,6 +1,6 @@
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
     origins "*"
-    resource "/waitlist", headers: :any, methods: [:post, :options]
+    resource "/waitlist", headers: :any, methods: [ :post, :options ]
   end
 end
