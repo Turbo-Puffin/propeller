@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_17_132934) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_12_042353) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -196,6 +196,37 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_17_132934) do
     t.index ["email"], name: "index_waitlist_entries_on_email", unique: true
   end
 
+  create_table "webhook_deliveries", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.integer "attempts", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "delivered_at"
+    t.string "event_type", null: false
+    t.text "last_error_message"
+    t.jsonb "payload", null: false
+    t.integer "response_status"
+    t.string "status", default: "pending", null: false
+    t.datetime "updated_at", null: false
+    t.uuid "webhook_endpoint_id", null: false
+    t.index ["status", "created_at"], name: "index_webhook_deliveries_on_status_and_created_at"
+    t.index ["webhook_endpoint_id", "created_at"], name: "index_webhook_deliveries_on_webhook_endpoint_id_and_created_at"
+    t.index ["webhook_endpoint_id"], name: "index_webhook_deliveries_on_webhook_endpoint_id"
+  end
+
+  create_table "webhook_endpoints", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "account_id", null: false
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.jsonb "event_types", default: [], null: false
+    t.datetime "last_failure_at"
+    t.text "last_failure_message"
+    t.datetime "last_success_at"
+    t.string "secret", null: false
+    t.datetime "updated_at", null: false
+    t.string "url", null: false
+    t.index ["account_id", "active"], name: "index_webhook_endpoints_on_account_id_and_active"
+    t.index ["account_id"], name: "index_webhook_endpoints_on_account_id"
+  end
+
   add_foreign_key "campaign_sends", "campaigns"
   add_foreign_key "campaign_sends", "contacts"
   add_foreign_key "campaigns", "accounts"
@@ -211,4 +242,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_17_132934) do
   add_foreign_key "form_submissions", "forms"
   add_foreign_key "forms", "accounts"
   add_foreign_key "users", "accounts"
+  add_foreign_key "webhook_deliveries", "webhook_endpoints"
+  add_foreign_key "webhook_endpoints", "accounts"
 end

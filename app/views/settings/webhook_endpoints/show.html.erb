@@ -1,0 +1,134 @@
+<% content_for(:title, "Webhook endpoint — Propeller") %>
+
+<%= render "nav" %>
+
+<div class="min-h-screen bg-gray-950 pt-24 px-6 relative overflow-hidden">
+  <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl"></div>
+  <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-violet-600/10 rounded-full blur-3xl"></div>
+
+  <div class="relative z-10 max-w-5xl mx-auto py-12 space-y-6">
+    <% if flash[:notice].present? %>
+      <div class="p-4 rounded-lg bg-emerald-900/30 border border-emerald-700/50 text-emerald-200" role="status">
+        <%= flash[:notice] %>
+      </div>
+    <% end %>
+    <% if flash[:alert].present? %>
+      <div class="p-4 rounded-lg bg-rose-900/30 border border-rose-700/50 text-rose-200" role="alert">
+        <%= flash[:alert] %>
+      </div>
+    <% end %>
+
+    <% if flash[:webhook_secret].present? %>
+      <div class="p-4 rounded-lg bg-amber-900/30 border border-amber-700/50" role="status" aria-live="polite">
+        <p class="text-amber-200 font-semibold mb-2">Save this signing secret now.</p>
+        <p class="text-amber-100 text-sm mb-3">This is the only time it will be displayed. Use it to verify the X-Propeller-Signature header on incoming requests.</p>
+        <code class="block px-3 py-2 bg-gray-950 border border-amber-700/50 rounded text-amber-100 text-sm font-mono break-all"><%= flash[:webhook_secret] %></code>
+      </div>
+    <% end %>
+
+    <div class="flex items-start justify-between">
+      <div>
+        <%= link_to "← Back to webhooks", settings_webhook_endpoints_path, class: "text-sm text-gray-400 hover:text-white mb-3 inline-block" %>
+        <h1 class="text-3xl font-bold text-white break-all font-mono"><%= @endpoint.url %></h1>
+        <p class="text-gray-400 mt-2">Signing secret: <span class="font-mono text-gray-300"><%= @endpoint.secret_preview %></span></p>
+      </div>
+      <div class="flex flex-wrap gap-2 justify-end">
+        <%= button_to "Send test event", test_fire_settings_webhook_endpoint_path(@endpoint),
+              method: :post,
+              class: "px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-full transition-all cursor-pointer" %>
+        <%= link_to "Edit", edit_settings_webhook_endpoint_path(@endpoint),
+              class: "px-4 py-2 text-sm font-medium text-gray-300 hover:text-white border border-gray-700 hover:border-gray-600 rounded-full transition-all" %>
+        <%= button_to "Delete", settings_webhook_endpoint_path(@endpoint), method: :delete,
+              form: { data: { turbo_confirm: "Permanently delete this endpoint?" } },
+              class: "px-4 py-2 text-sm font-medium text-rose-300 hover:text-rose-200 border border-rose-700/50 hover:border-rose-600 rounded-full transition-all cursor-pointer" %>
+      </div>
+    </div>
+
+    <div class="grid sm:grid-cols-2 gap-4">
+      <div class="bg-gray-900/40 border border-gray-800 rounded-2xl p-6">
+        <h3 class="text-sm font-medium text-gray-400 uppercase tracking-wider mb-3">Status</h3>
+        <% if @endpoint.active? %>
+          <p class="text-lg font-semibold text-emerald-300">Active</p>
+        <% else %>
+          <p class="text-lg font-semibold text-gray-400">Inactive</p>
+        <% end %>
+      </div>
+      <div class="bg-gray-900/40 border border-gray-800 rounded-2xl p-6">
+        <h3 class="text-sm font-medium text-gray-400 uppercase tracking-wider mb-3">Last delivery</h3>
+        <% if @endpoint.last_success_at.present? %>
+          <p class="text-sm text-emerald-300">Success <%= time_ago_in_words(@endpoint.last_success_at) %> ago</p>
+        <% end %>
+        <% if @endpoint.last_failure_at.present? %>
+          <p class="text-sm text-rose-300 mt-1">Failure <%= time_ago_in_words(@endpoint.last_failure_at) %> ago</p>
+          <% if @endpoint.last_failure_message.present? %>
+            <p class="text-xs text-gray-500 mt-1 font-mono break-all"><%= @endpoint.last_failure_message %></p>
+          <% end %>
+        <% end %>
+        <% if @endpoint.last_success_at.blank? && @endpoint.last_failure_at.blank? %>
+          <p class="text-sm text-gray-500">No deliveries yet</p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="bg-gray-900/40 border border-gray-800 rounded-2xl p-6">
+      <h2 class="text-sm font-medium text-gray-400 uppercase tracking-wider mb-3">Subscribed events</h2>
+      <div class="flex flex-wrap gap-2">
+        <% @endpoint.event_types.each do |event| %>
+          <span class="px-3 py-1 text-xs rounded-full bg-indigo-900/40 border border-indigo-700/40 text-indigo-200 font-mono"><%= event %></span>
+        <% end %>
+        <% if @endpoint.event_types.empty? %>
+          <span class="text-sm text-gray-500">No events subscribed.</span>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="bg-gray-900/40 border border-gray-800 rounded-2xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-800">
+        <h2 class="text-lg font-semibold text-white">Recent deliveries</h2>
+      </div>
+      <% if @recent_deliveries.empty? %>
+        <p class="px-6 py-8 text-center text-gray-500 text-sm">No deliveries yet.</p>
+      <% else %>
+        <table class="w-full text-left">
+          <thead class="bg-gray-900/60 text-xs uppercase tracking-wider text-gray-400">
+            <tr>
+              <th class="px-6 py-3" scope="col">Event</th>
+              <th class="px-6 py-3" scope="col">Status</th>
+              <th class="px-6 py-3" scope="col">Attempts</th>
+              <th class="px-6 py-3" scope="col">When</th>
+              <th class="px-6 py-3" scope="col"><span class="sr-only">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-800">
+            <% @recent_deliveries.each do |delivery| %>
+              <tr>
+                <td class="px-6 py-3 text-sm font-mono text-white"><%= delivery.event_type %></td>
+                <td class="px-6 py-3 text-sm">
+                  <% case delivery.status
+                     when "delivered" %>
+                    <span class="px-2 py-0.5 text-xs rounded-full bg-emerald-900/40 border border-emerald-700/40 text-emerald-200">Delivered<% if delivery.response_status %> · <%= delivery.response_status %><% end %></span>
+                  <% when "failed" %>
+                    <span class="px-2 py-0.5 text-xs rounded-full bg-rose-900/40 border border-rose-700/40 text-rose-200">Failed<% if delivery.response_status %> · <%= delivery.response_status %><% end %></span>
+                  <% else %>
+                    <span class="px-2 py-0.5 text-xs rounded-full bg-amber-900/40 border border-amber-700/40 text-amber-200">Pending</span>
+                  <% end %>
+                  <% if delivery.last_error_message.present? %>
+                    <p class="text-xs text-gray-500 mt-1 font-mono break-all"><%= delivery.last_error_message.truncate(120) %></p>
+                  <% end %>
+                </td>
+                <td class="px-6 py-3 text-sm text-gray-300"><%= delivery.attempts %></td>
+                <td class="px-6 py-3 text-sm text-gray-400"><%= time_ago_in_words(delivery.created_at) %> ago</td>
+                <td class="px-6 py-3 text-right">
+                  <% if delivery.replayable? %>
+                    <%= button_to "Replay", replay_settings_webhook_delivery_path(delivery), method: :post,
+                          class: "px-3 py-1 text-xs text-indigo-300 hover:text-indigo-200 border border-indigo-700/40 hover:border-indigo-500 rounded-full transition-all cursor-pointer" %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% end %>
+    </div>
+  </div>
+</div>

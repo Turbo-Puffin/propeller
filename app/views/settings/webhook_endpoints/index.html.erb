@@ -1,0 +1,87 @@
+<% content_for(:title, "Webhooks — Propeller") %>
+
+<%= render "nav" %>
+
+<div class="min-h-screen bg-gray-950 pt-24 px-6 relative overflow-hidden">
+  <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl"></div>
+  <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-violet-600/10 rounded-full blur-3xl"></div>
+
+  <div class="relative z-10 max-w-5xl mx-auto py-12">
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-3xl font-bold text-white mb-2">Webhooks</h1>
+        <p class="text-gray-400">POST events to your own systems. Verify signatures with your secret.</p>
+      </div>
+      <%= link_to "Add endpoint", new_settings_webhook_endpoint_path,
+            class: "px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-full transition-all" %>
+    </div>
+
+    <% if flash[:notice].present? %>
+      <div class="mb-6 p-4 rounded-lg bg-emerald-900/30 border border-emerald-700/50 text-emerald-200" role="status">
+        <%= flash[:notice] %>
+      </div>
+    <% end %>
+    <% if flash[:alert].present? %>
+      <div class="mb-6 p-4 rounded-lg bg-rose-900/30 border border-rose-700/50 text-rose-200" role="alert">
+        <%= flash[:alert] %>
+      </div>
+    <% end %>
+
+    <% if @endpoints.empty? %>
+      <div class="bg-gray-900/40 border border-gray-800 rounded-2xl p-10 text-center">
+        <p class="text-gray-300 text-lg mb-2">No webhook endpoints yet.</p>
+        <p class="text-gray-500 text-sm">Subscribe to contact, list, or campaign events and we will POST them to your URL.</p>
+      </div>
+    <% else %>
+      <div class="bg-gray-900/40 border border-gray-800 rounded-2xl overflow-hidden">
+        <table class="w-full text-left">
+          <thead class="bg-gray-900/60 text-xs uppercase tracking-wider text-gray-400">
+            <tr>
+              <th class="px-6 py-3" scope="col">URL</th>
+              <th class="px-6 py-3" scope="col">Events</th>
+              <th class="px-6 py-3" scope="col">Status</th>
+              <th class="px-6 py-3" scope="col">Last activity</th>
+              <th class="px-6 py-3" scope="col"><span class="sr-only">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-800">
+            <% @endpoints.each do |endpoint| %>
+              <tr class="hover:bg-gray-900/60">
+                <td class="px-6 py-4 text-sm text-white font-mono truncate max-w-xs"><%= endpoint.url.truncate(48) %></td>
+                <td class="px-6 py-4">
+                  <div class="flex flex-wrap gap-1">
+                    <% endpoint.event_types.first(4).each do |event| %>
+                      <span class="px-2 py-0.5 text-xs rounded-full bg-indigo-900/40 border border-indigo-700/40 text-indigo-200"><%= event %></span>
+                    <% end %>
+                    <% if endpoint.event_types.length > 4 %>
+                      <span class="px-2 py-0.5 text-xs text-gray-400">+<%= endpoint.event_types.length - 4 %></span>
+                    <% end %>
+                  </div>
+                </td>
+                <td class="px-6 py-4 text-sm">
+                  <% if endpoint.active? %>
+                    <span class="px-2 py-0.5 text-xs rounded-full bg-emerald-900/40 border border-emerald-700/40 text-emerald-200">Active</span>
+                  <% else %>
+                    <span class="px-2 py-0.5 text-xs rounded-full bg-gray-800 border border-gray-700 text-gray-300">Inactive</span>
+                  <% end %>
+                </td>
+                <td class="px-6 py-4 text-sm text-gray-400">
+                  <% if endpoint.last_success_at.present? %>
+                    <span class="text-emerald-300">Success</span> <%= time_ago_in_words(endpoint.last_success_at) %> ago
+                  <% elsif endpoint.last_failure_at.present? %>
+                    <span class="text-rose-300">Failed</span> <%= time_ago_in_words(endpoint.last_failure_at) %> ago
+                  <% else %>
+                    <span class="text-gray-500">No deliveries yet</span>
+                  <% end %>
+                </td>
+                <td class="px-6 py-4 text-right text-sm">
+                  <%= link_to "View", settings_webhook_endpoint_path(endpoint), class: "text-indigo-300 hover:text-indigo-200" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
+  </div>
+</div>

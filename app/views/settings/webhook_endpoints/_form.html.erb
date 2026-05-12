@@ -1,0 +1,47 @@
+<%= form_with model: endpoint, url: form_url, method: form_method, local: true, class: "space-y-6" do |f| %>
+  <% if endpoint.errors.any? %>
+    <div class="p-4 rounded-lg bg-rose-900/30 border border-rose-700/50 text-rose-200" role="alert">
+      <p class="font-semibold mb-1"><%= pluralize(endpoint.errors.count, "error") %> prevented this endpoint from saving:</p>
+      <ul class="list-disc list-inside text-sm">
+        <% endpoint.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.label :url, "Destination URL", class: "block text-sm font-medium text-gray-200 mb-2" %>
+    <%= f.url_field :url, required: true, placeholder: "https://example.com/webhooks/propeller",
+          class: "w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" %>
+    <p class="mt-1 text-xs text-gray-500">Must use http or https. Propeller will POST JSON here with an X-Propeller-Signature header.</p>
+  </div>
+
+  <div>
+    <span class="block text-sm font-medium text-gray-200 mb-2">Subscribed events</span>
+    <fieldset class="grid sm:grid-cols-2 gap-2">
+      <legend class="sr-only">Subscribed events</legend>
+      <% WebhookEndpoint::SUPPORTED_EVENTS.each do |event| %>
+        <label class="flex items-center gap-2 p-3 bg-gray-900 border border-gray-800 rounded-lg hover:border-gray-700 cursor-pointer">
+          <%= check_box_tag "webhook_endpoint[event_types][]", event, endpoint.event_types.include?(event),
+                class: "h-4 w-4 text-indigo-600 bg-gray-900 border-gray-700 rounded focus:ring-indigo-500" %>
+          <span class="text-sm text-gray-200 font-mono"><%= event %></span>
+        </label>
+      <% end %>
+      <%= hidden_field_tag "webhook_endpoint[event_types][]", "" %>
+    </fieldset>
+  </div>
+
+  <div>
+    <label class="flex items-center gap-2">
+      <%= f.check_box :active, class: "h-4 w-4 text-indigo-600 bg-gray-900 border-gray-700 rounded focus:ring-indigo-500" %>
+      <span class="text-sm text-gray-200">Active</span>
+    </label>
+    <p class="mt-1 text-xs text-gray-500">Inactive endpoints will not receive any deliveries.</p>
+  </div>
+
+  <div class="flex gap-3">
+    <%= f.submit submit_label, class: "px-5 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 rounded-full transition-all cursor-pointer" %>
+    <%= link_to "Cancel", settings_webhook_endpoints_path, class: "px-5 py-2 text-sm font-medium text-gray-300 hover:text-white border border-gray-700 hover:border-gray-600 rounded-full transition-all" %>
+  </div>
+<% end %>
