@@ -1,0 +1,77 @@
+<% content_for(:title, "#{@template.name} — Propeller") %>
+
+<%= render "nav" %>
+
+<div class="min-h-screen bg-gray-950 pt-24 px-6">
+  <div class="max-w-5xl mx-auto py-12">
+    <div class="flex items-start justify-between mb-8 gap-4 flex-wrap">
+      <div>
+        <%= link_to "← All templates", settings_email_templates_path,
+              class: "text-sm text-indigo-300 hover:text-indigo-200 focus:outline-none focus-visible:underline" %>
+        <h1 class="text-3xl font-bold text-white mt-2"><%= @template.name %></h1>
+        <p class="text-gray-400 font-mono mt-1"><%= @template.slug %></p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <%= link_to "Edit", edit_settings_email_template_path(@template),
+              class: "px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 rounded-full" %>
+        <%= button_to "Preview", preview_settings_email_template_path(@template), method: :post,
+              class: "px-4 py-2 text-sm font-medium text-white border border-gray-600 hover:border-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 rounded-full" %>
+        <%= button_to "Duplicate", duplicate_settings_email_template_path(@template), method: :post,
+              class: "px-4 py-2 text-sm font-medium text-white border border-gray-600 hover:border-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 rounded-full" %>
+        <% if @template.archived? %>
+          <%= button_to "Restore", unarchive_settings_email_template_path(@template), method: :patch,
+                class: "px-4 py-2 text-sm font-medium text-emerald-200 border border-emerald-700 hover:border-emerald-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 rounded-full" %>
+        <% else %>
+          <%= button_to "Archive", archive_settings_email_template_path(@template), method: :patch,
+                class: "px-4 py-2 text-sm font-medium text-gray-200 border border-gray-600 hover:border-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 rounded-full" %>
+        <% end %>
+        <%= button_to "Delete", settings_email_template_path(@template), method: :delete,
+              data: { turbo_confirm: "Delete this template permanently?" },
+              class: "px-4 py-2 text-sm font-medium text-rose-200 border border-rose-700 hover:border-rose-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 rounded-full" %>
+      </div>
+    </div>
+
+    <% if flash[:notice].present? %>
+      <div class="mb-6 p-4 rounded-lg bg-emerald-900/30 border border-emerald-700/50 text-emerald-200" role="status">
+        <%= flash[:notice] %>
+      </div>
+    <% end %>
+
+    <div class="grid sm:grid-cols-2 gap-6 mb-8">
+      <div class="bg-gray-900/40 border border-gray-800 rounded-2xl p-6">
+        <h2 class="text-sm font-medium text-gray-300 uppercase tracking-wider mb-2">Status</h2>
+        <% if @template.active? %>
+          <p class="text-emerald-300 font-semibold">Active</p>
+        <% else %>
+          <p class="text-gray-200 font-semibold">Archived</p>
+        <% end %>
+      </div>
+      <div class="bg-gray-900/40 border border-gray-800 rounded-2xl p-6">
+        <h2 class="text-sm font-medium text-gray-300 uppercase tracking-wider mb-2">Updated</h2>
+        <p class="text-gray-100"><%= @template.updated_at.strftime("%b %-d, %Y at %-l:%M %p") %></p>
+      </div>
+    </div>
+
+    <div class="space-y-6">
+      <div class="bg-gray-900/40 border border-gray-800 rounded-2xl p-6">
+        <h2 class="text-sm font-medium text-gray-300 uppercase tracking-wider mb-2">Subject template</h2>
+        <p class="text-white font-mono break-all"><%= @template.subject_template.presence || "(none)" %></p>
+      </div>
+
+      <div class="bg-gray-900/40 border border-gray-800 rounded-2xl p-6">
+        <h2 class="text-sm font-medium text-gray-300 uppercase tracking-wider mb-2">HTML body</h2>
+        <pre class="text-sm text-gray-100 font-mono whitespace-pre-wrap break-words"><%= @template.html_body %></pre>
+      </div>
+
+      <div class="bg-gray-900/40 border border-gray-800 rounded-2xl p-6">
+        <h2 class="text-sm font-medium text-gray-300 uppercase tracking-wider mb-2">Plain text body</h2>
+        <pre class="text-sm text-gray-100 font-mono whitespace-pre-wrap break-words"><%= @template.plain_body %></pre>
+      </div>
+
+      <div class="bg-gray-900/40 border border-gray-800 rounded-2xl p-6">
+        <h2 class="text-sm font-medium text-gray-300 uppercase tracking-wider mb-2">Default variables</h2>
+        <pre class="text-sm text-gray-100 font-mono whitespace-pre-wrap break-words"><%= JSON.pretty_generate(@template.default_variables.presence || {}) %></pre>
+      </div>
+    </div>
+  </div>
+</div>

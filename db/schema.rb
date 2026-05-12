@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_17_132934) do
+ActiveRecord::Schema[8.1].define(version: 2026_05_12_100000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pgcrypto"
@@ -26,6 +26,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_17_132934) do
     t.index ["plan"], name: "index_accounts_on_plan"
     t.index ["status"], name: "index_accounts_on_status"
     t.index ["subdomain"], name: "index_accounts_on_subdomain", unique: true
+  end
+
+  create_table "audit_events", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "account_id", null: false
+    t.string "action", null: false
+    t.uuid "actor_id"
+    t.string "actor_type", null: false
+    t.datetime "created_at", null: false
+    t.jsonb "metadata", default: {}, null: false
+    t.string "request_ip"
+    t.uuid "target_id"
+    t.string "target_type"
+    t.string "user_agent"
+    t.index ["account_id", "created_at"], name: "index_audit_events_on_account_id_and_created_at"
+    t.index ["account_id"], name: "index_audit_events_on_account_id"
+    t.index ["action"], name: "index_audit_events_on_action"
+    t.index ["actor_type", "actor_id"], name: "index_audit_events_on_actor_type_and_actor_id"
+    t.index ["target_type", "target_id"], name: "index_audit_events_on_target_type_and_target_id"
   end
 
   create_table "campaign_sends", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
@@ -145,6 +163,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_17_132934) do
     t.index ["trigger_type"], name: "index_email_sequences_on_trigger_type"
   end
 
+  create_table "email_templates", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.uuid "account_id", null: false
+    t.datetime "created_at", null: false
+    t.jsonb "default_variables", default: {}, null: false
+    t.text "html_body", null: false
+    t.string "name", null: false
+    t.text "plain_body", null: false
+    t.string "slug", null: false
+    t.string "status", default: "active", null: false
+    t.string "subject_template"
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "slug"], name: "index_email_templates_on_account_id_and_slug", unique: true
+    t.index ["account_id"], name: "index_email_templates_on_account_id"
+    t.index ["status"], name: "index_email_templates_on_status"
+  end
+
   create_table "form_submissions", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.uuid "contact_id"
     t.datetime "created_at", null: false
@@ -196,6 +230,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_17_132934) do
     t.index ["email"], name: "index_waitlist_entries_on_email", unique: true
   end
 
+  add_foreign_key "audit_events", "accounts"
   add_foreign_key "campaign_sends", "campaigns"
   add_foreign_key "campaign_sends", "contacts"
   add_foreign_key "campaigns", "accounts"
@@ -207,6 +242,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_17_132934) do
   add_foreign_key "email_sequence_enrollments", "email_sequences"
   add_foreign_key "email_sequence_steps", "email_sequences"
   add_foreign_key "email_sequences", "accounts"
+  add_foreign_key "email_templates", "accounts"
   add_foreign_key "form_submissions", "contacts"
   add_foreign_key "form_submissions", "forms"
   add_foreign_key "forms", "accounts"

@@ -1,0 +1,51 @@
+<% content_for(:title, "Preview: #{@template.name} — Propeller") %>
+
+<%= render "nav" %>
+
+<div class="min-h-screen bg-gray-950 pt-24 px-6">
+  <div class="max-w-6xl mx-auto py-12">
+    <div class="flex items-center justify-between mb-8 gap-4 flex-wrap">
+      <div>
+        <%= link_to "← Back to template", settings_email_template_path(@template),
+              class: "text-sm text-indigo-300 hover:text-indigo-200 focus:outline-none focus-visible:underline" %>
+        <h1 class="text-3xl font-bold text-white mt-2">Preview: <%= @template.name %></h1>
+        <p class="text-gray-400 text-sm mt-1">Rendered with <span class="font-mono"><%= @sample_contact.email %></span></p>
+      </div>
+    </div>
+
+    <% if @preview.errors.any? %>
+      <div class="mb-6 p-4 rounded-lg bg-rose-900/30 border border-rose-700/50 text-rose-100" role="alert" aria-live="polite">
+        <p class="font-semibold mb-1">Render errors:</p>
+        <ul class="list-disc list-inside text-sm font-mono">
+          <% @preview.errors.each do |err| %>
+            <li><%= err %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="space-y-6">
+      <div class="bg-gray-900/40 border border-gray-800 rounded-2xl p-6">
+        <h2 class="text-sm font-medium text-gray-300 uppercase tracking-wider mb-2">Subject</h2>
+        <p class="text-white font-medium break-words"><%= @preview.subject %></p>
+      </div>
+
+      <div class="grid lg:grid-cols-2 gap-6">
+        <div class="bg-gray-900/40 border border-gray-800 rounded-2xl p-6">
+          <h2 class="text-sm font-medium text-gray-300 uppercase tracking-wider mb-2">HTML output</h2>
+          <iframe sandbox srcdoc="<%= @preview.html %>"
+                  title="Rendered HTML preview"
+                  class="w-full h-[600px] bg-white rounded-lg border border-gray-700"></iframe>
+          <details class="mt-3">
+            <summary class="text-xs text-gray-400 cursor-pointer">View HTML source</summary>
+            <pre class="text-xs text-gray-100 font-mono whitespace-pre-wrap break-words mt-2"><%= @preview.html %></pre>
+          </details>
+        </div>
+        <div class="bg-gray-900/40 border border-gray-800 rounded-2xl p-6">
+          <h2 class="text-sm font-medium text-gray-300 uppercase tracking-wider mb-2">Plain text output</h2>
+          <pre class="text-sm text-gray-100 font-mono whitespace-pre-wrap break-words max-h-[600px] overflow-auto"><%= @preview.plain %></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

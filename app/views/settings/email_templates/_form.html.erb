@@ -1,0 +1,73 @@
+<%= form_with model: @template, url: form_url, scope: :email_template, local: true, html: { class: "space-y-6" } do |f| %>
+  <% if @template.errors.any? %>
+    <div class="p-4 rounded-lg bg-rose-900/30 border border-rose-700/50 text-rose-100" role="alert" aria-live="polite">
+      <p class="font-semibold mb-1">There were problems saving this template:</p>
+      <ul class="list-disc list-inside text-sm">
+        <% @template.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.label :name, class: "block text-sm font-medium text-gray-200 mb-1" %>
+    <%= f.text_field :name, required: true,
+          class: "w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-400" %>
+  </div>
+
+  <div>
+    <%= f.label :slug, class: "block text-sm font-medium text-gray-200 mb-1" %>
+    <%= f.text_field :slug,
+          placeholder: "auto-derived from name if blank",
+          "aria-describedby": "slug-help",
+          class: "w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 font-mono focus:outline-none focus:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-400" %>
+    <p id="slug-help" class="text-xs text-gray-400 mt-1">Lowercase letters, numbers, hyphens, underscores. Used for API references.</p>
+  </div>
+
+  <div>
+    <%= f.label :subject_template, "Subject", class: "block text-sm font-medium text-gray-200 mb-1" %>
+    <%= f.text_field :subject_template,
+          placeholder: "Welcome, {{ contact.first_name }}",
+          class: "w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-400" %>
+  </div>
+
+  <div>
+    <%= f.label :html_body, "HTML body", class: "block text-sm font-medium text-gray-200 mb-1" %>
+    <%= f.text_area :html_body, rows: 14, required: true,
+          "aria-describedby": "html-help",
+          class: "w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 font-mono text-sm focus:outline-none focus:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-400" %>
+    <p id="html-help" class="text-xs text-gray-400 mt-1">Use Liquid syntax: <code>{{ contact.first_name }}</code>, <code>{% if contact.last_name %}...{% endif %}</code>. File includes and shell tags are sandboxed.</p>
+  </div>
+
+  <div>
+    <%= f.label :plain_body, "Plain text body", class: "block text-sm font-medium text-gray-200 mb-1" %>
+    <%= f.text_area :plain_body, rows: 8,
+          "aria-describedby": "plain-help",
+          class: "w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 font-mono text-sm focus:outline-none focus:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-400" %>
+    <p id="plain-help" class="text-xs text-gray-400 mt-1">Optional. Auto-derived from HTML if left blank.</p>
+  </div>
+
+  <div>
+    <%= f.label :default_variables_json, "Default variables (JSON object)", class: "block text-sm font-medium text-gray-200 mb-1" %>
+    <%= f.text_area :default_variables_json, rows: 4,
+          value: JSON.pretty_generate(@template.default_variables.presence || {}),
+          "aria-describedby": "defaults-help",
+          class: "w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 font-mono text-sm focus:outline-none focus:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-400" %>
+    <p id="defaults-help" class="text-xs text-gray-400 mt-1">Fallbacks when contact, campaign, or account properties are missing.</p>
+  </div>
+
+  <div>
+    <%= f.label :status, class: "block text-sm font-medium text-gray-200 mb-1" %>
+    <%= f.select :status, EmailTemplate::STATUSES.map { |s| [ s.titleize, s ] },
+          {},
+          class: "w-full px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-indigo-500 focus-visible:ring-2 focus-visible:ring-indigo-400" %>
+  </div>
+
+  <div class="flex items-center gap-3 pt-2">
+    <%= f.submit submit_label,
+          class: "px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 rounded-full transition-all" %>
+    <%= link_to "Cancel", cancel_url,
+          class: "px-4 py-2 text-sm text-gray-300 hover:text-white focus:outline-none focus-visible:underline" %>
+  </div>
+<% end %>
