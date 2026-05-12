@@ -36,3 +36,9 @@
 
 /app/assets/builds/*
 !/app/assets/builds/.keep
+
+# MCP server (Node): local dependencies and build output.
+/mcp/node_modules
+/mcp/dist
+/mcp/coverage
+/mcp/.env*
