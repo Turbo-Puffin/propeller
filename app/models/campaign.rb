@@ -1,4 +1,6 @@
 class Campaign < ApplicationRecord
+  include Auditable
+
   belongs_to :account
   has_many :campaign_sends, dependent: :destroy
 
@@ -8,4 +10,7 @@ class Campaign < ApplicationRecord
   validates :name, presence: true
 
   scope :active, -> { where(status: [ :scheduled, :sending ]) }
+
+  audit_actions :create, :update, :destroy,
+                changed_fields: %i[name status subject from_name from_email scheduled_at sent_at]
 end
