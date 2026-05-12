@@ -19,6 +19,10 @@ Rails.application.routes.draw do
 
   get "/dashboard", to: "dashboard#show", as: :dashboard
 
+  namespace :dashboard do
+    resources :audit, only: [ :index, :show ]
+  end
+
   root "pages#home"
   post "/waitlist", to: "waitlist#create", as: :waitlist
 end

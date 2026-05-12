@@ -1,10 +1,15 @@
 class Contact < ApplicationRecord
+  include Auditable
+
   belongs_to :account
   has_many :contact_list_memberships, dependent: :destroy
   has_many :contact_lists, through: :contact_list_memberships
   has_many :campaign_sends, dependent: :destroy
   has_many :form_submissions, dependent: :nullify
   has_many :email_sequence_enrollments, dependent: :destroy
+
+  audit_actions :create, :update, :destroy,
+                changed_fields: %i[email first_name last_name status metadata subscribed_at unsubscribed_at]
 
   enum :status, { active: 0, unsubscribed: 1, bounced: 2, complained: 3 }
 
