@@ -5,6 +5,7 @@ class Account < ApplicationRecord
   has_many :campaigns, dependent: :destroy
   has_many :forms, dependent: :destroy
   has_many :email_sequences, dependent: :destroy
+  has_many :email_templates, dependent: :destroy
 
   enum :plan, { free: 0, starter: 1, pro: 2, enterprise: 3 }
   enum :status, { active: 0, suspended: 1, cancelled: 2 }

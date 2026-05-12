@@ -21,4 +21,25 @@ Rails.application.routes.draw do
 
   root "pages#home"
   post "/waitlist", to: "waitlist#create", as: :waitlist
+
+  namespace :settings do
+    resources :email_templates do
+      member do
+        post   :preview
+        post   :duplicate
+        patch  :archive
+        patch  :unarchive
+      end
+    end
+  end
+
+  namespace :api do
+    namespace :v1 do
+      resources :templates do
+        member do
+          post :preview
+        end
+      end
+    end
+  end
 end

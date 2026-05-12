@@ -22,6 +22,9 @@ gem "jbuilder"
 # Cross-origin requests for embedded signup forms
 gem "rack-cors"
 
+# Sandboxed Liquid templating for email template variable substitution
+gem "liquid", "~> 5.5"
+
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 gem "bcrypt", "~> 3.1.7"
 
